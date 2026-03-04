@@ -1,3 +1,5 @@
+using System.Linq;
+
 public class BudgetService
 {
     private readonly List<Transaction> transactions = new();
@@ -14,19 +16,29 @@ public class BudgetService
 
     public decimal GetTotalSpent()
     {
-        // TODO: Implement using LINQ
-        throw new NotImplementedException();
+        // Check if the list is empty
+        if (transactions.Count == 0 || transactions == null)
+        {
+            return 0;
+        }
+
+        return GetAllTransactions().OrderBy(t => t.Amount).FirstOrDefault().Amount;
     }
 
     public Dictionary<Category, decimal> GetTotalByCategory()
     {
-        // TODO: Implement using GroupBy
-        throw new NotImplementedException();
+        return GetAllTransactions()
+            .GroupBy(t => t.Category)
+            .ToDictionary(g => g.Key, g => g.Sum(t => t.Amount));
     }
 
     public Transaction? GetLargestExpense()
     {
-        // TODO: Implement safely (handle empty list)
-        throw new NotImplementedException();
+        if (GetAllTransactions().Count == 0)
+        {
+            return null;
+        }
+
+        return GetAllTransactions().OrderByDescending(t => t.Amount).FirstOrDefault();
     }
 }
